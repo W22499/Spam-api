@@ -3,12 +3,16 @@ from email.mime import text
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
+import math
 
 app = Flask(__name__)
 CORS(app)
 
 # Load model (with vectorizer inside)
-model = joblib.load("sms_fraud_model_LSV_CV.pkl")
+data = joblib.load("sms_fraud_model_LSV_CV.pkl")
+
+model = data["model"]
+threshold = data["threshold"]
 
 @app.route("/")
 def home():
@@ -26,13 +30,14 @@ def predict():
         text = data["text"]
 
         # Prediction
-        prediction = model.predict([text])[0]
+        score = model.decision_function([text])[0]
+        prediction = 1 if score > threshold else 0
 
         # Confidence
         decision_score = model.decision_function([text])[0]
 
         # Convert to pseudo-confidence (0–1)
-        confidence = 1 / (1 + pow(2.71828, -abs(decision_score)))
+        confidence = 1 / (1 + math.exp(-score))
 
         # Convert to readable label
         result = "spam" if prediction == 1 else "Not Spam"
