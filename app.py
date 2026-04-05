@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load model (with vectorizer inside)
-model = joblib.load("sms_fraud_model_MNB_CV.pkl")
+model = joblib.load("sms_fraud_model_LSV_CV.pkl")
 
 @app.route("/")
 def home():
