@@ -1,3 +1,5 @@
+from email.mime import text
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
@@ -27,8 +29,10 @@ def predict():
         prediction = model.predict([text])[0]
 
         # Confidence
-        probabilities = model.predict_proba([text])[0]
-        confidence = max(probabilities)
+        decision_score = model.decision_function([text])[0]
+
+        # Convert to pseudo-confidence (0–1)
+        confidence = 1 / (1 + pow(2.71828, -abs(decision_score)))
 
         # Convert to readable label
         result = "spam" if prediction == 1 else "Not Spam"
