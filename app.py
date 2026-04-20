@@ -20,25 +20,22 @@ def predict():
     try:
         data = request.get_json()
 
-        # Validate input
         if not data or "text" not in data:
             return jsonify({"error": "No text provided"}), 400
 
         text = data["text"]
 
-        # Prediction
-        prediction = model.predict([text])[0]
+        # Get probability of SPAM (class = 1)
+        spam_prob = model.predict_proba([text])[0][1]
 
-        # Confidence 
-        probabilities = model.predict_proba([text])[0]
-        confidence = max(probabilities)
+        # Apply YOUR trained threshold
+        prediction = 1 if spam_prob > threshold else 0
 
-        # Convert to readable label
         result = "Spam" if prediction == 1 else "Not Spam"
 
         return jsonify({
             "prediction": result,
-            "confidence": float(confidence)
+            "confidence": float(spam_prob)  
         })
 
     except Exception as e:
