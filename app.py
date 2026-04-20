@@ -27,12 +27,14 @@ def predict():
 
         # Get probability of SPAM (class = 1)
         spam_prob = model.predict_proba([text])[0][1]
+        ham_prob = 1 - spam_prob
 
-        prediction = 1 if spam_prob > threshold else 0
+        prediction = "Spam" if spam_prob > threshold else "Not Spam"
 
         return jsonify({
-            "prediction": "Spam" if prediction == 1 else "Not Spam",
-            "confidence": float(spam_prob)
+            "prediction": prediction,
+            "spam_probability": float(spam_prob),
+            "ham_probability": float(ham_prob)
         })
 
     except Exception as e:
