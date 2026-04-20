@@ -6,7 +6,10 @@ app = Flask(__name__)
 CORS(app)
 
 # Load model
-model = joblib.load("sms_spam_model_LR_TFIDF.pkl")
+data = joblib.load("sms_spam_model_LR_TFIDF_V2.pkl")
+
+model = data["model"]
+threshold = data["threshold"]
 
 @app.route("/")
 def home():
