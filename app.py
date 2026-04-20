@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load model (with vectorizer inside)
-data = joblib.load("sms_fraud_model_LSV_CV.pkl")
+data = joblib.load("sms_spam_model_LR_TFIDF.pkl")
 
 model = data["model"]
 threshold = data["threshold"]
