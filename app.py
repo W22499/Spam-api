@@ -1,16 +1,12 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
-import math
 
 app = Flask(__name__)
 CORS(app)
 
-# Load model (with vectorizer inside)
-data = joblib.load("sms_spam_model_LR_TFIDF.pkl")
-
-model = data["model"]
-threshold = data["threshold"]
+# Load model
+model = joblib.load("sms_spam_model_LR_TFIDF.pkl")
 
 @app.route("/")
 def home():
@@ -28,17 +24,14 @@ def predict():
         text = data["text"]
 
         # Prediction
-        score = model.decision_function([text])[0]
-        prediction = 1 if score > threshold else 0
+        prediction = model.predict([text])[0]
 
-        # Confidence
-        decision_score = model.decision_function([text])[0]
-
-        # Convert to pseudo-confidence (0–1)
-        confidence = 1 / (1 + math.exp(-score))
+        # Confidence 
+        probabilities = model.predict_proba([text])[0]
+        confidence = max(probabilities)
 
         # Convert to readable label
-        result = "spam" if prediction == 1 else "Not Spam"
+        result = "Spam" if prediction == 1 else "Not Spam"
 
         return jsonify({
             "prediction": result,
